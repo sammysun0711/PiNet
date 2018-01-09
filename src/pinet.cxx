@@ -2,6 +2,7 @@
 #include <sstream>
 #include <boost/network.hpp>
 #include <boost/network/uri.hpp>
+#include <boost/lexical_cast.hpp>
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include <string>
@@ -21,35 +22,18 @@ const std::string ERROR_MESS_KEY = "errorMessage";
 const std::string usr = "Xiake";
 const std::string pwd = "123";    
 
-//helper function for check if int number in string
-bool hasInt(std::string line){
-    char* p;
-    strtol(line.c_str(), &p, 10);
-    return *p == 0;
+//helper function for check if value is number
+template<typename T>
+bool isNumber(T x){
+   std::string s;
+   std::stringstream ss; 
+   ss << x;
+   ss >>s;
+   if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0])) return false ;
+   char * p ;
+   strtod(s.c_str(), &p) ;
+   return (*p == 0) ;
 }
-
-bool hasDouble(std::string line){
-    char* pEnd;
-    strtod(line.c_str(), &pEnd);
-    return *pEnd == 0;
-}
-/**
-bool isInt(int n){
-    int tmp = n;
-    if (!(cin >> tmp))
-        return false;
-    else
-        return true; 
-}
-
-bool isDouble( double n){
-    double tmp = n;
-    if (!(cin >> tmp))
-        return false;
-    else
-        return true; 
-}
-**/
 
 //helper function for concrete [] part from httpResponse        
 std::string tail(std::string const& source, size_t const length) {
@@ -139,19 +123,15 @@ std::string sendRequest(std::string prozedur, std::list<std::string> parameter){
 
     for (std::list<std::string>::const_iterator iterator = parameter.begin(), end = parameter.end(); iterator != end; ++iterator) {
     std::string value = *iterator;
-    //bool result = isInt(value);
-    //std::cout << *iterator << " isInt? : " << result << endl; 
     std::string vtyp = "string";
-    bool isNumber = false;
+    bool isNumber_ = false;
 
-    if (hasInt(value) || hasDouble(value)){
-        isNumber = true;
-    }
+    isNumber_ = isNumber(value);
     if (value == "0")
         vtyp = "zero";
     else if (value.empty() || value == "")
         vtyp = "emptyString";
-    else if (isNumber)
+    else if (isNumber_)
         vtyp = "zahl";
     
     std::string tmpVtyp = "&vtyp" + std::to_string(count) + "=";
@@ -192,21 +172,23 @@ std::string getVal (std::string setname, std::string varname, std::string dataty
 
 
 // helper function for saving value of variable in databank 
-//template <typename T>
-std::string saveVal (std::string setname, std::string varname, int value, std::string datatype, int row, int col){
+template <typename T>
+std::string saveVal (std::string setname, std::string varname, T value, std::string datatype, int row, int col){
     
     std::list<std::string> parameter;
-    /**
+    
     std::string value_;
-    if (isInt(value)|| isDouble(value)){
-        value_ = std::to_string(value);
+    if (isNumber(value)){
+        value_ = boost::lexical_cast<std::string>(value);
     }
-    **/
+    else{
+        value_ = value;
+    }
     parameter.push_back(usr);
     parameter.push_back(pwd);
     parameter.push_back(setname);
     parameter.push_back(varname);
-    parameter.push_back(std::to_string(value));
+    parameter.push_back(value_);
     parameter.push_back(datatype);
     parameter.push_back(std::to_string(row));
     parameter.push_back(std::to_string(col));
@@ -235,7 +217,6 @@ int main()
 
     std::string reply_saveVal = saveVal(setname, varname, value, datatype , 0, 0);
     parse(reply_saveVal, setname, varname, datatype);
-    
     return 0;
 }
 
