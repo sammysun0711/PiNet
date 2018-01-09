@@ -22,17 +22,34 @@ const std::string usr = "Xiake";
 const std::string pwd = "123";    
 
 //helper function for check if int number in string
-bool isInt(std::string line){
+bool hasInt(std::string line){
     char* p;
     strtol(line.c_str(), &p, 10);
     return *p == 0;
 }
 
-bool isDouble(std::string line){
+bool hasDouble(std::string line){
     char* pEnd;
     strtod(line.c_str(), &pEnd);
     return *pEnd == 0;
 }
+/**
+bool isInt(int n){
+    int tmp = n;
+    if (!(cin >> tmp))
+        return false;
+    else
+        return true; 
+}
+
+bool isDouble( double n){
+    double tmp = n;
+    if (!(cin >> tmp))
+        return false;
+    else
+        return true; 
+}
+**/
 
 //helper function for concrete [] part from httpResponse        
 std::string tail(std::string const& source, size_t const length) {
@@ -41,7 +58,6 @@ std::string tail(std::string const& source, size_t const length) {
 }
 
 // parse reply from response from server
-// TO DO: Add Situation for two TRIGGER_ERROR
 void parse(std::string reply, std::string setname, std::string varname, std::string datatype){
     // Parse Json into document using rapidjson
     std::string strJson;
@@ -113,11 +129,41 @@ void parse(std::string reply, std::string setname, std::string varname, std::str
 }
 
 // helper function for sendRequest to server
-std::string sendRequest(std::string prozedur, std::string parameter){
+std::string sendRequest(std::string prozedur, std::list<std::string> parameter){
+    
     std::stringstream query;
-    query << "prozedur=" << uri::encoded(prozedur) << parameter;
-    //cout<< endl << endl << query.str() << endl;
+    int count = 1;
+    query << "username=" << uri::encoded(usr)
+          << "&passwort=" << uri::encoded(pwd)
+          << "&prozedur=" << uri::encoded(prozedur);
 
+    for (std::list<std::string>::const_iterator iterator = parameter.begin(), end = parameter.end(); iterator != end; ++iterator) {
+    std::string value = *iterator;
+    //bool result = isInt(value);
+    //std::cout << *iterator << " isInt? : " << result << endl; 
+    std::string vtyp = "string";
+    bool isNumber = false;
+
+    if (hasInt(value) || hasDouble(value)){
+        isNumber = true;
+    }
+    if (value == "0")
+        vtyp = "zero";
+    else if (value.empty() || value == "")
+        vtyp = "emptyString";
+    else if (isNumber)
+        vtyp = "zahl";
+    
+    std::string tmpVtyp = "&vtyp" + std::to_string(count) + "=";
+    query << tmpVtyp << uri::encoded(vtyp);
+
+    std::string tmpVar = "&variable" + std::to_string(count) + "=";
+    query << tmpVar << uri::encoded(value);
+         
+    count++;
+    }
+    cout << query.str() << endl;
+    
     // HTTP request object
     //client::request httpRequest("http://posttestserver.com/post.php?dump");
     client::request httpRequest(url);
@@ -129,116 +175,65 @@ std::string sendRequest(std::string prozedur, std::string parameter){
     std::string httpResponseBody = body(httpResponse);
     cout << endl << endl << "RESPONSE: " << httpResponseBody;
     return httpResponseBody;
+    
 }
 
 // helper function for getting value of variable from databank
 std::string getVal (std::string setname, std::string varname, std::string datatype){
-    std::stringstream parameter;
-    std::string vtyp = "string";
-
-    parameter  << "&username=" << uri::encoded(usr)
-               << "&passwort=" << uri::encoded(pwd)
-               << "&vtyp1=" << uri::encoded(vtyp)
-               << "&variable1=" << uri::encoded(usr)
-               << "&vtyp2=" << uri::encoded(vtyp)
-               << "&variable2=" << uri::encoded(pwd)
-               << "&vtyp3=" << uri::encoded(vtyp)
-               << "&variable3=" << uri::encoded(setname)
-               << "&vtyp4=" << uri::encoded(vtyp)
-               << "&variable4=" << uri::encoded(varname)
-               << "&vtyp5=" << uri::encoded(vtyp)
-               << "&variable5=" << uri::encoded(datatype);
-    return sendRequest("p_getVal", parameter.str());    
+    
+    std::list<std::string> parameter;
+    parameter.push_back(usr);
+    parameter.push_back(pwd);
+    parameter.push_back(setname);
+    parameter.push_back(varname);
+    parameter.push_back(datatype);
+    return sendRequest("p_getVal", parameter);    
 } 
 
 
 // helper function for saving value of variable in databank 
-template <typename T>
-std::string saveVal (std::string setname, std::string varname, T value, std::string datatype){
-    std::stringstream parameter;
-    std::string vtyp = "string";
-    std::string zahl = "zahl";
+//template <typename T>
+std::string saveVal (std::string setname, std::string varname, int value, std::string datatype, int row, int col){
+    
+    std::list<std::string> parameter;
+    /**
     std::string value_;
-    
-    parameter  << "&username=" << uri::encoded(usr)
-               << "&passwort=" << uri::encoded(pwd)
-               << "&vtyp1=" << uri::encoded(vtyp)
-               << "&variable1=" << uri::encoded(usr)
-               << "&vtyp2=" << uri::encoded(vtyp)
-               << "&variable2=" << uri::encoded(pwd)
-               << "&vtyp3=" << uri::encoded(vtyp)
-               << "&variable3=" << uri::encoded(setname)
-               << "&vtyp4=" << uri::encoded(vtyp)
-               << "&variable4=" << uri::encoded(varname)
-               << "&vtyp5=" << uri::encoded(vtyp)
-               << "&variable5=" << uri::encoded(value.c_str())
-               << "&vtyp6=" << uri::encoded(vtyp)
-               << "&variable6=" << uri::encoded(datatype)
-               << "&vtyp7=" << uri::encoded(zahl)
-               << "&variable7=" << uri::encoded(std::to_string(0))
-               << "&vtyp8=" << uri::encoded(zahl)
-               << "&variable8=" << uri::encoded(std::to_string(0));
+    if (isInt(value)|| isDouble(value)){
+        value_ = std::to_string(value);
+    }
+    **/
+    parameter.push_back(usr);
+    parameter.push_back(pwd);
+    parameter.push_back(setname);
+    parameter.push_back(varname);
+    parameter.push_back(std::to_string(value));
+    parameter.push_back(datatype);
+    parameter.push_back(std::to_string(row));
+    parameter.push_back(std::to_string(col));
 
-    return sendRequest("p_saveValItem", parameter.str());    
-    
+    return sendRequest("p_saveValItem", parameter);    
 }
-/**
-void sendRequest(std::string prozedur, std::list<std::string> parameter){
-    std::stringstream formParams;
-    formParmas << "prozedur=" << uri::encoded(prozedur)
-               << "&username=" << uri::encoded(usr)
-               << "&passwort=" << uri::encoded(pwd);
-    
-	for (std::list<std::string>::const_iterator iterator = parameter.begin(); iterator != parameter.end(); ++iterator)
-	{
-        // set vtyp default to be "string"
-        std::string vtyp = "string";
-
-		bool isNumber = false;
-        //if parameter->at(i) is a double, then parameter->at(i).toInt(&isNumber) do not work, set isNumber=false
-        isNumber = std::stoi(*iterator);
-		if (!isNumber)
-        //if parameter->at(i) is a double, then parameter->at(i).toDouble(&isNumber) works,and set isNumber=true
-            isNumber = std::stod(*iterator);    
-		formParams << "&variable" << std::to_string(iterator+1) <<*iterator; 
-        //qu.addQueryItem("variable" + QString::number(i + 1), parameter->at(i));
-		if (*iterator == "0")
-			vtyp = "zero";
-		//else if (*iterator.parameter->at(i).isNull()
-		//	vtyp = "null";
-		else if (*iterator.empty() || *iterator == "")
-			vtyp = "emptyString";
-		else if (isNumber)
-            vtyp = "zahl";
-        formParams << "&vtyp" << std::to_string(iterator+1) <<vtyp; 
-	}
-    
-}
-
-std::string getVal(std::string setname, std::string varname, std::string datatype){
-    std::stringstream parameter;
-    parameter << usr << pwd << setname << varname << datatype; 
-    sendRequest("p_getVal", parameter);  
-}
-
-
-**/
 
 int main()
 {   
     const std::string setname = "TestsetXiake";
-    const std::string varname = "str100";
-    const std::string datatype = "STRING100";
-    //const std::string varname = "n";
-    //const std::string datatype = "INT32";
-    //const int value = 28;
+    
+    const std::string varname = "n";
+    const std::string datatype = "INT32";
+    const int value = 28;
+    
+    //const std::string varname = "x";
+    //const std::string datatype = "DOUBLE";
     //const double value = 3.14;
-    const std::string value = "hello world";
+    
+    //const std::string varname = "str100";
+    //const std::string datatype = "STRING100";
+    //const std::string value = "hello world";
     
     std::string reply_getVal = getVal(setname, varname, datatype);
     parse(reply_getVal, setname, varname, datatype);
 
-    std::string reply_saveVal = saveVal(setname, varname, value, datatype);
+    std::string reply_saveVal = saveVal(setname, varname, value, datatype , 0, 0);
     parse(reply_saveVal, setname, varname, datatype);
     
     return 0;
