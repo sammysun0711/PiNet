@@ -16,7 +16,8 @@ const std::string url = "http://codset.lorch-group.de/PROCinterface.php";
 const std::string TRIGGER_RESPONSE_MYSQL = "??**wejnonwr4234gTRIGGER_RESPONSE_MYSQL**??";
 const std::string TRIGGER_ERRORS_PHP = "??**wejnonwr4234gTRIGGER_ERRORS_PHP**??";
 const std::string TRIGGER_ERRORS_MYSQL = "??**wejnonwr4234gTRIGGER_ERRORS_MYSQL**??";
-
+const std::string ERROR_CODE_KEY = "errorCode";
+const std::string ERROR_MESS_KEY = "errorMessage";
 const std::string usr = "Xiake";
 const std::string pwd = "123";    
 
@@ -36,46 +37,65 @@ void parse(std::string reply, std::string setname, std::string varname, std::str
         count = reply.length()-reply.find(TRIGGER_RESPONSE_MYSQL)-TRIGGER_RESPONSE_MYSQL.length();
         strJson = tail(reply, count);
         cout<< endl<< endl << strJson <<endl;
-    }
+        // if there is json in [], parse json into doc, otherweise return no json in reply from server
+        if (strJson.length()>2){
+        strJson.erase(0,1);
+        strJson.erase(strJson.size()-1);
+        cout<< endl << endl << strJson <<endl;
     
-    // if there is json in [], parse json into doc, otherweise return no json in reply from server
-    if (strJson.length()>2){
-    strJson.erase(0,1);
-    strJson.erase(strJson.size()-1);
-    cout<< endl << endl << strJson <<endl;
-    
-    Document doc;
-    try{
-        if(doc.Parse<0>(strJson.c_str()).HasParseError())
-        cout << "ERROR" << endl;
-        else
-        cout << "OK" << endl;
+        Document doc;
+        try{
+            if(doc.Parse<0>(strJson.c_str()).HasParseError())
+            cout << "ERROR" << endl;
+            else
+            cout << "OK" << endl;
+
+            doc.Parse(strJson.c_str());
+            std::string setname_ = doc["setname"].GetString();
+            std::string varname_ = doc["varname"].GetString();
+            std::string datatype_ = doc["datatype"].GetString();
         
+            if (setname_ == setname && varname_==varname && datatype_ == datatype){
+            std::string value_ = doc["value"].GetString();
+            cout << "setname = " << setname_ << endl;
+            cout << "varname = " << varname_ << endl;
+            cout << "datatype = " << datatype_ << endl;
+            cout << "value = " << value_ << endl;
+            }
+            else{
+                cout << "there is no valid content in reply" << endl;
+            }
+        } 
+
+        catch (std::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
+        }
+
+        else if(strJson == "[]"){
+            std::cerr << "there is no json in reply from server" << endl;   
+        }
+    }
+    else if(reply.find(TRIGGER_ERRORS_MYSQL)!=std::string::npos){
+        int count;
+        count = reply.length()-reply.find(TRIGGER_ERRORS_MYSQL)-TRIGGER_ERRORS_MYSQL.length();
+        strJson = tail(reply, count);
+        strJson.erase(0,1);
+        strJson.erase(strJson.size()-1);
+        cout << strJson << endl;
+        Document doc;
+        if(!doc.Parse<0>(strJson.c_str()).HasParseError()){
         doc.Parse(strJson.c_str());
-        std::string setname_ = doc["setname"].GetString();
-        std::string varname_ = doc["varname"].GetString();
-        std::string datatype_ = doc["datatype"].GetString();
-        
-        if (setname_ == setname && varname_==varname && datatype_ == datatype){
-        std::string value_ = doc["value"].GetString();
-        cout << "setname = " << setname_ << endl;
-        cout << "varname = " << varname_ << endl;
-        cout << "datatype = " << datatype_ << endl;
-        cout << "value = " << value_ << endl;
+        std::stringstream failure;
+        failure << doc["errorCode"].GetString() << " - " << doc["errorMessage"].GetString();
+        cout << failure.str() << endl;
         }
-        else{
-            cout << "there is no valid content in reply" << endl;
-        }
-    } 
-
-    catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
     }
-
-    }
-
-    else if(strJson == "[]"){
-        std::cerr << "there is no json in reply from server" << endl;   
+    else if (reply.find(TRIGGER_ERRORS_PHP)!=std::string::npos){
+        int count;
+        count = reply.length()-reply.find(TRIGGER_ERRORS_PHP)-TRIGGER_ERRORS_PHP.length();
+        std::string failure = tail(reply, count);
+        cout << endl << failure << endl;
     }
 }
 
@@ -83,7 +103,7 @@ void parse(std::string reply, std::string setname, std::string varname, std::str
 std::string sendRequest(std::string prozedur, std::string parameter){
     std::stringstream query;
     query << "prozedur=" << uri::encoded(prozedur) << parameter;
-    cout<< endl << endl << query.str() << endl;
+    //cout<< endl << endl << query.str() << endl;
 
     // HTTP request object
     //client::request httpRequest("http://posttestserver.com/post.php?dump");
