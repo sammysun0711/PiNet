@@ -21,6 +21,19 @@ const std::string ERROR_MESS_KEY = "errorMessage";
 const std::string usr = "Xiake";
 const std::string pwd = "123";    
 
+//helper function for check if int number in string
+bool isInt(std::string line){
+    char* p;
+    strtol(line.c_str(), &p, 10);
+    return *p == 0;
+}
+
+bool isDouble(std::string line){
+    char* pEnd;
+    strtod(line.c_str(), &pEnd);
+    return *pEnd == 0;
+}
+
 //helper function for concrete [] part from httpResponse        
 std::string tail(std::string const& source, size_t const length) {
   if (length >= source.size()) { return source; }
@@ -138,11 +151,15 @@ std::string getVal (std::string setname, std::string varname, std::string dataty
     return sendRequest("p_getVal", parameter.str());    
 } 
 
+
 // helper function for saving value of variable in databank 
-std::string saveVal (std::string setname, std::string varname, int n, std::string datatype){
+template <typename T>
+std::string saveVal (std::string setname, std::string varname, T value, std::string datatype){
     std::stringstream parameter;
     std::string vtyp = "string";
     std::string zahl = "zahl";
+    std::string value_;
+    
     parameter  << "&username=" << uri::encoded(usr)
                << "&passwort=" << uri::encoded(pwd)
                << "&vtyp1=" << uri::encoded(vtyp)
@@ -154,7 +171,7 @@ std::string saveVal (std::string setname, std::string varname, int n, std::strin
                << "&vtyp4=" << uri::encoded(vtyp)
                << "&variable4=" << uri::encoded(varname)
                << "&vtyp5=" << uri::encoded(vtyp)
-               << "&variable5=" << uri::encoded(std::to_string(n))
+               << "&variable5=" << uri::encoded(value.c_str())
                << "&vtyp6=" << uri::encoded(vtyp)
                << "&variable6=" << uri::encoded(datatype)
                << "&vtyp7=" << uri::encoded(zahl)
@@ -163,6 +180,7 @@ std::string saveVal (std::string setname, std::string varname, int n, std::strin
                << "&variable8=" << uri::encoded(std::to_string(0));
 
     return sendRequest("p_saveValItem", parameter.str());    
+    
 }
 /**
 void sendRequest(std::string prozedur, std::list<std::string> parameter){
@@ -209,9 +227,13 @@ std::string getVal(std::string setname, std::string varname, std::string datatyp
 int main()
 {   
     const std::string setname = "TestsetXiake";
-    const std::string varname = "n";
-    const std::string datatype = "INT32";
-    const int value = 28;
+    const std::string varname = "str100";
+    const std::string datatype = "STRING100";
+    //const std::string varname = "n";
+    //const std::string datatype = "INT32";
+    //const int value = 28;
+    //const double value = 3.14;
+    const std::string value = "hello world";
     
     std::string reply_getVal = getVal(setname, varname, datatype);
     parse(reply_getVal, setname, varname, datatype);
