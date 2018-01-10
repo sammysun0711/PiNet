@@ -3,10 +3,11 @@
 #include <boost/network.hpp>
 #include <boost/network/uri.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include <string>
-
+#include <cassert>
 
 //using namespace std;
 using namespace boost::network;
@@ -17,19 +18,13 @@ const std::string url = "http://codset.lorch-group.de/PROCinterface.php";
 const std::string TRIGGER_RESPONSE_MYSQL = "??**wejnonwr4234gTRIGGER_RESPONSE_MYSQL**??";
 const std::string TRIGGER_ERRORS_PHP = "??**wejnonwr4234gTRIGGER_ERRORS_PHP**??";
 const std::string TRIGGER_ERRORS_MYSQL = "??**wejnonwr4234gTRIGGER_ERRORS_MYSQL**??";
-const std::string ERROR_CODE_KEY = "errorCode";
-const std::string ERROR_MESS_KEY = "errorMessage";
+//const std::string ERROR_CODE_KEY = "errorCode";
+//const std::string ERROR_MESS_KEY = "errorMessage";
 const std::string usr = "Xiake";
 const std::string pwd = "123";    
 const std::string TRENNER = "?/?TRENN?/?";
+
 //helper function for check if value is number
-/**
- * White space will make it return false.
- * NAN and INF will make it return false (to be exact, any character except valid exponent will make it return false). If you want to allow nan and inf, delete the || std::isalpha(s[0]) part.
- * scientific form is allowed i.e 1e+12 will return true.
- * Double/float or integer will return true. 
- * /
-**/
 template<typename T>
 bool isNumber(T x){
    std::string s;
@@ -42,74 +37,67 @@ bool isNumber(T x){
    return (*p == 0) ;
 }
 
-
-//helper function for concrete [] part from httpResponse        
+//helper function for truncrate [] part from httpResponse        
 std::string tail(std::string const& source, size_t const length) {
   if (length >= source.size()) { return source; }
   return source.substr(source.size() - length);
 }
 
+//helper function for spilt multiply json in string into std::list<std::string>
+std::list<std::string> get_str_between_two_str(const std::string &s,
+        const std::string &start_delim,
+        const std::string &stop_delim)
+{
+    std::string tmpString = s;
+    std::list<std::string> list;
+    unsigned first_delim_pos;
+    unsigned end_pos_of_first_delim;
+    unsigned last_delim_pos;
+    while(tmpString.find(start_delim)!= std::string::npos){
+        first_delim_pos = tmpString.find(start_delim);
+        end_pos_of_first_delim = first_delim_pos + start_delim.length();
+        last_delim_pos = tmpString.find_first_of(stop_delim, end_pos_of_first_delim);
+        
+        list.push_back("{" + tmpString.substr(end_pos_of_first_delim,
+                                last_delim_pos - end_pos_of_first_delim) + "}");
+        tmpString = tail(s, tmpString.length() - last_delim_pos -1);
+    }
+    return list; 
+}
+
 // parse reply from response from server
-//void parse(std::string reply, std::string setname, std::string varname, std::string datatype){
-void parse(std::string reply){
+void parseItem(std::string reply){
     // Parse Json into document using rapidjson
     std::string strJson;
     if (reply.find(TRIGGER_RESPONSE_MYSQL)!=std::string::npos){
         int count;
         count = reply.length()-reply.find(TRIGGER_RESPONSE_MYSQL)-TRIGGER_RESPONSE_MYSQL.length();
         strJson = tail(reply, count);
-        //cout<< endl<< endl << strJson <<endl;
-        // if there is json in [], parse json into doc, otherweise return no json in reply from server
+        // if there are multiple json in [], save every content between {} in std::list<std::string>,
+        // and parse single parse json into doc, when there is no json in list, return no json in reply from server
         if (strJson.length()>2){
-            strJson.erase(0,1);
-            strJson.erase(strJson.size()-1);
-            //std::cout<< std::endl << std::endl << strJson << std::endl;
-            //strJson.insert(1,"{");
-            //strJson.append("}");
-            std::cout<< std::endl << std::endl << strJson << std::endl;
-            //std::stringstream strJsonStream;
-            //strJsonStream << strJson;
-            
-            Document doc;                     
-            //std::cout << doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str()).HasParseError() << std::endl;
-            try{
-                if(!doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str()).HasParseError()){
-                    //doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str());
-                    //std::string setname_ = doc["setname"].GetString();
-                    //std::string varname_ = doc["varname"].GetString();
+            std::list<std::string> jsonList = get_str_between_two_str(strJson, "{","}"); 
+            for (std::list<std::string>::const_iterator itr = jsonList.begin(), end = jsonList.end(); itr != end; ++itr) {
+                std::string json = *itr;
+                Document doc;
+                if(!doc.Parse<rapidjson::kParseStopWhenDoneFlag>(json.c_str()).HasParseError()){
+                    std::cout << std::endl << "parse result: " << std::endl;
                     for (Value::ConstMemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr){
-                        //const Value& objName = doc[itr->name.GetString()];
-                        
                         std::cout << itr->name.GetString() << ": "; //key name
-                        if (itr->value.IsInt()) //if integer
+                        if (itr->value.IsInt())          // if integer
                             std::cout << itr->value.GetInt() << std::endl;
-                        else if (itr->value.IsDouble()) 
+                        else if (itr->value.IsDouble())  // if 
                             std::cout << itr->value.GetDouble() << std::endl;
-                        else if (itr->value.IsString()) //if string
+                        else if (itr->value.IsString())  // if string
                             std::cout << itr->value.GetString() << std::endl;
                     }
-                    /**
-                    if (setname_ == setname && varname_==varname && datatype_ == datatype){
-                        std::string value_ = doc["value"].GetString();
-                        std::cout << std::endl <<  "parse result:" << std::endl;
-                        std::cout << "setname = " << setname_ << std::endl;
-                        std::cout << "varname = " << varname_ << std::endl;
-                        std::cout << "datatype = " << datatype_ << std::endl;
-                        std::cout << "value = " << value_ << std::endl;
-                    
-                    }
-                    else{
-                        std::cerr << std::endl <<  "parse result : there is no valid content in reply" << std::endl;
-                    }
-                    **/
                 }
-            }    
-
-            catch (std::exception &e) {
-            std::cerr << e.what() << std::endl;
+                else{
+                    std::cerr << std::endl <<  "parse result : there is no valid content in reply" << std::endl;
+                }      
             }
         }
-
+            
         else if(strJson == "[]"){
             std::cerr << std::endl <<"parse result : there is no Json in reply from server" << std::endl;   
         }
@@ -124,7 +112,6 @@ void parse(std::string reply){
 
         Document doc;
         if(!doc.Parse<0>(strJson.c_str()).HasParseError()){
-            doc.Parse(strJson.c_str());
             std::stringstream failure;
             failure << doc["errorCode"].GetString() << " - " << doc["errorMessage"].GetString();
             std::cout << failure.str() << std::endl;
@@ -168,7 +155,6 @@ std::string sendRequest(std::string prozedur, std::list<std::string> parameter){
          
         count++;
     }
-    //cout << query.str() << endl;
     
     // HTTP request object
     //client::request httpRequest("http://posttestserver.com/post.php?dump");
@@ -305,23 +291,27 @@ int main()
     //const std::string value = "hello world";
     
     //std::string reply_getVal = getVal(setname, varname, datatype);
-    //parse(reply_getVal);
+    //parseItem(reply_getVal);
 
     //std::string reply_saveVal = saveVal(setname, varname, value, datatype);
-    //parse(reply_saveVal, setname, varname, datatype);
+    //parseItem(reply_saveVal);
 
+    
     std::list<std::string> varnames;
     varnames.push_back("n");
     varnames.push_back("x");
     varnames.push_back("str100");
     
     std::string reply_getVals = getVals(setname, varnames);
-    parse(reply_getVals);
+    parseItem(reply_getVals);
+    
+
     //std::string reply_initSet = initSet("initSet");
     //std::string reply_delSet = delSet("initSet");
     //std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
     //std::string reply_resetVal = resetVal("initSet", varname);
     //std::string reply_delVar = delVar("initSet", varname);
+    
     return 0;
 }
 
