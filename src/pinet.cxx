@@ -21,7 +21,7 @@ const std::string ERROR_CODE_KEY = "errorCode";
 const std::string ERROR_MESS_KEY = "errorMessage";
 const std::string usr = "Xiake";
 const std::string pwd = "123";    
-
+const std::string TRENNER = "?/?TRENN?/?";
 //helper function for check if value is number
 /**
  * White space will make it return false.
@@ -35,7 +35,7 @@ bool isNumber(T x){
    std::string s;
    std::stringstream ss; 
    ss << x;
-   ss >>s;
+   ss >> s;
    if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0])) return false ;
    char * p ;
    strtod(s.c_str(), &p) ;
@@ -50,7 +50,8 @@ std::string tail(std::string const& source, size_t const length) {
 }
 
 // parse reply from response from server
-void parse(std::string reply, std::string setname, std::string varname, std::string datatype){
+//void parse(std::string reply, std::string setname, std::string varname, std::string datatype){
+void parse(std::string reply){
     // Parse Json into document using rapidjson
     std::string strJson;
     if (reply.find(TRIGGER_RESPONSE_MYSQL)!=std::string::npos){
@@ -62,16 +63,32 @@ void parse(std::string reply, std::string setname, std::string varname, std::str
         if (strJson.length()>2){
             strJson.erase(0,1);
             strJson.erase(strJson.size()-1);
+            //std::cout<< std::endl << std::endl << strJson << std::endl;
+            //strJson.insert(1,"{");
+            //strJson.append("}");
             std::cout<< std::endl << std::endl << strJson << std::endl;
-    
-            Document doc;
+            //std::stringstream strJsonStream;
+            //strJsonStream << strJson;
+            
+            Document doc;                     
+            //std::cout << doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str()).HasParseError() << std::endl;
             try{
-                if(!doc.Parse<0>(strJson.c_str()).HasParseError()){
-                    doc.Parse(strJson.c_str());
-                    std::string setname_ = doc["setname"].GetString();
-                    std::string varname_ = doc["varname"].GetString();
-                    std::string datatype_ = doc["datatype"].GetString();
-        
+                if(!doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str()).HasParseError()){
+                    //doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str());
+                    //std::string setname_ = doc["setname"].GetString();
+                    //std::string varname_ = doc["varname"].GetString();
+                    for (Value::ConstMemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr){
+                        //const Value& objName = doc[itr->name.GetString()];
+                        
+                        std::cout << itr->name.GetString() << ": "; //key name
+                        if (itr->value.IsInt()) //if integer
+                            std::cout << itr->value.GetInt() << std::endl;
+                        else if (itr->value.IsDouble()) 
+                            std::cout << itr->value.GetDouble() << std::endl;
+                        else if (itr->value.IsString()) //if string
+                            std::cout << itr->value.GetString() << std::endl;
+                    }
+                    /**
                     if (setname_ == setname && varname_==varname && datatype_ == datatype){
                         std::string value_ = doc["value"].GetString();
                         std::cout << std::endl <<  "parse result:" << std::endl;
@@ -79,10 +96,12 @@ void parse(std::string reply, std::string setname, std::string varname, std::str
                         std::cout << "varname = " << varname_ << std::endl;
                         std::cout << "datatype = " << datatype_ << std::endl;
                         std::cout << "value = " << value_ << std::endl;
+                    
                     }
                     else{
                         std::cerr << std::endl <<  "parse result : there is no valid content in reply" << std::endl;
                     }
+                    **/
                 }
             }    
 
@@ -178,6 +197,20 @@ std::string getVal (std::string setname, std::string varname, std::string dataty
     return sendRequest("p_getVal", parameter);    
 } 
 
+std::string getVals (std::string setname, std::list<std::string> varnames){
+    
+    std::string vars;
+    for (std::list<std::string>::const_iterator iterator = varnames.begin(), end = varnames.end(); iterator != end; ++iterator) {
+        vars = vars + *iterator + TRENNER;
+    }
+    std::list<std::string> parameter;
+    parameter.push_back(usr);
+    parameter.push_back(pwd);
+    parameter.push_back(setname);
+    parameter.push_back(vars);
+
+    return sendRequest("p_getVals", parameter);    
+}
 
 // helper function for saving value of variable in databank 
 template <typename T>
@@ -271,12 +304,19 @@ int main()
     //const std::string datatype = "STRING100";
     //const std::string value = "hello world";
     
-    std::string reply_getVal = getVal(setname, varname, datatype);
-    parse(reply_getVal, setname, varname, datatype);
+    //std::string reply_getVal = getVal(setname, varname, datatype);
+    //parse(reply_getVal);
 
-    std::string reply_saveVal = saveVal(setname, varname, value, datatype);
-    parse(reply_saveVal, setname, varname, datatype);
+    //std::string reply_saveVal = saveVal(setname, varname, value, datatype);
+    //parse(reply_saveVal, setname, varname, datatype);
 
+    std::list<std::string> varnames;
+    varnames.push_back("n");
+    varnames.push_back("x");
+    varnames.push_back("str100");
+    
+    std::string reply_getVals = getVals(setname, varnames);
+    parse(reply_getVals);
     //std::string reply_initSet = initSet("initSet");
     //std::string reply_delSet = delSet("initSet");
     //std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
