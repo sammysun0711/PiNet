@@ -23,6 +23,8 @@ rapidjson/rapidjson.h
 /home/sammysun/PiNet/src/rapidjson/rapidjson.h
 rapidjson/document.h
 /home/sammysun/PiNet/src/rapidjson/document.h
+rapidjson/filereadstream.h
+/home/sammysun/PiNet/src/rapidjson/filereadstream.h
 string
 -
 cassert
@@ -32,6 +34,8 @@ map
 chrono
 -
 iomanip
+-
+fstream
 -
 
 /usr/local/lib/cmake/cppnetlib/../../../include/asio/associated_allocator.hpp
@@ -33065,6 +33069,12 @@ rapidjson.h
 /usr/local/lib/cmake/cppnetlib/../../../include/rapidjson/error/error.h
 ../rapidjson.h
 /usr/local/lib/cmake/cppnetlib/../../../include/rapidjson/rapidjson.h
+
+/usr/local/lib/cmake/cppnetlib/../../../include/rapidjson/filereadstream.h
+stream.h
+/usr/local/lib/cmake/cppnetlib/../../../include/rapidjson/stream.h
+cstdio
+-
 
 /usr/local/lib/cmake/cppnetlib/../../../include/rapidjson/internal/biginteger.h
 ../rapidjson.h
