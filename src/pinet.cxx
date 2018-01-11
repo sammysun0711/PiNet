@@ -86,7 +86,7 @@ std::map<std::string,std::string> valItem(std::string varname, std::string datat
     return Item;
 }
 
-// parse reply from response from server
+// helper function aim to parse reply from response from server
 void parseItem(std::string reply){
     // Parse Json into document using rapidjson
     std::string strJson;
@@ -120,7 +120,7 @@ void parseItem(std::string reply){
         }
             
         else if(strJson == "[]"){
-            std::cerr << std::endl <<"parse result : there is no Json in reply from server" << std::endl;   
+            std::cerr << std::endl <<"parse result : prozedur success, there is no Json in reply from server" << std::endl;   
         }
     }
     else if(reply.find(TRIGGER_ERRORS_MYSQL)!=std::string::npos){
@@ -177,6 +177,7 @@ std::string sendRequest(std::string prozedur, std::list<std::string> parameter){
         count++;
     }
     
+    //std::cout << query.str() << std::endl;
     // HTTP request object
     //client::request httpRequest("http://posttestserver.com/post.php?dump");
     client::request httpRequest(url);
@@ -244,6 +245,39 @@ std::string saveVal (std::string setname, std::string varname, T value, std::str
     return sendRequest("p_saveValItem", parameter);    
 }
 
+// helper function aim to save multiply variable in databank
+std::string saveVals (std::string setname, std::list<std::map<std::string,std::string> > varList){
+    
+    std::string vars = "";
+    std::string values = "";
+    std::string datatypes = "";
+    std::string rows = "";
+    std::string cols = "";
+    
+    for (auto itr = varList.begin(), end = varList.end(); itr != end; ++itr) {
+        auto valItem = *itr;        
+        vars = vars + valItem["varname"] + TRENNER;
+        values = values + valItem["value"] + TRENNER;
+        datatypes = datatypes + valItem["datatype"] + TRENNER;
+        rows = rows + valItem["row"] + TRENNER;
+        cols = cols + valItem["col"] + TRENNER; 
+    }
+
+    std::list<std::string> parameter;
+    parameter.push_back(usr);
+    parameter.push_back(pwd);
+    parameter.push_back(setname);
+    parameter.push_back(vars);
+    parameter.push_back(values);
+    parameter.push_back(datatypes);
+    parameter.push_back(rows);
+    parameter.push_back(cols);
+
+    return sendRequest("p_saveValItems", parameter);    
+}
+
+
+
 std::string initSet( std::string setname){
     std::list<std::string> parameter;
     parameter.push_back(usr);
@@ -302,8 +336,6 @@ int main()
     
     const std::string varname = "n";
     const std::string datatype = "INT32";
-    const std::string INT32 = "INT32";
-    const std::string DOUBLE = "DOUBLE";
     const int value = 28;
 
     //const std::string varname = "x";
@@ -314,39 +346,42 @@ int main()
     //const std::string datatype = "STRING100";
     //const std::string value = "hello world";
     
-    //std::string reply_initSet = initSet("initSet");
-    //std::string reply_delSet = delSet("initSet");
-    //std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
-    //std::string reply_resetVal = resetVal("initSet", varname);
-    //std::string reply_delVar = delVar("initSet", varname);
+    std::string reply_initSet = initSet("initSet");
+    parseItem(reply_initSet);
     
-    //std::string reply_getVal = getVal(setname, varname, datatype);
-    //parseItem(reply_getVal);
+    std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
+    parseItem(reply_initVar);
+    
+    std::string reply_resetVal = resetVal("initSet", varname);
+    parseItem(reply_resetVal);
+    
+    std::string reply_delVar = delVar("initSet", varname);
+    parseItem(reply_delVar);
+    
+    std::string reply_delSet = delSet("initSet");
+    parseItem(reply_delSet);
 
-    /**
+    std::string reply_getVal = getVal(setname, varname, datatype);
+    parseItem(reply_getVal);
+
     std::list<std::string> varnames;
     varnames.push_back("n");
     varnames.push_back("x");
-    varnames.push_back("str100");
-    
+    varnames.push_back("str100");    
     std::string reply_getVals = getVals(setname, varnames);
     parseItem(reply_getVals);
-    **/
+    
 
-    //std::string reply_saveVal = saveVal(setname, varname, value, datatype);
-    //parseItem(reply_saveVal);
+    std::string reply_saveVal = saveVal(setname, varname, value, datatype, 0, 0);
+    parseItem(reply_saveVal);
 
-    std::list<std::map<std::string,std::string> >vars;
-    vars.push_back(valItem("n", "INT32",  32, 1, 1));
-    vars.push_back(valItem("x", "DOUBLE", 3.14, 1, 1));
-    for (auto itr = vars.begin(), end = vars.end(); itr != end; ++itr) {
-        auto valItem = *itr;        
-        std::cout<<valItem["varname"] << std::endl;
-        std::cout<<valItem["datatype"] << std::endl;
-        std::cout<<valItem["value"] << std::endl;
-        std::cout<<valItem["row"] << std::endl;
-        std::cout<<valItem["col"] << std::endl;
-    }
+    
+    std::list<std::map<std::string,std::string> > varList;
+    varList.push_back(valItem("n", "INT32",  32, 0, 0));
+    varList.push_back(valItem("x", "DOUBLE", 3.14, 0, 0));
+    varList.push_back(valItem("str100", "STRING100", "hello world", 0, 0));
+    std::string reply_saveVals = saveVals(setname, varList);
+    parseItem(reply_saveVals);
 
     return 0;
 }
