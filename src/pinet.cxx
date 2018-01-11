@@ -8,6 +8,7 @@
 #include "rapidjson/document.h"
 #include <string>
 #include <cassert>
+#include <map>
 
 //using namespace std;
 using namespace boost::network;
@@ -63,6 +64,26 @@ std::list<std::string> get_str_between_two_str(const std::string &s,
         tmpString = tail(s, tmpString.length() - last_delim_pos -1);
     }
     return list; 
+}
+
+// helper function to make std::map object to make key-value mapping
+template<typename T>
+std::map<std::string,std::string> valItem(std::string varname, std::string datatype, T value, int row, int col){
+    std::map<std::string,std::string> Item;
+    Item.insert(std::make_pair("varname", varname));
+    std::string value_;
+    if (isNumber(value)){
+        value_ = boost::lexical_cast<std::string>(value);
+    }
+    else{
+        value_ = value;
+    }
+    Item.insert(std::make_pair("datatype", datatype));
+    Item.insert(std::make_pair("value", value_));
+    Item.insert(std::make_pair("row", std::to_string(row)));
+    Item.insert(std::make_pair("col", std::to_string(col)));
+    
+    return Item;
 }
 
 // parse reply from response from server
@@ -274,14 +295,17 @@ std::string delVar(std::string setname, std::string varname){
     return sendRequest("p_delVar", parameter);
 }
 
+
 int main()
 {   
     const std::string setname = "TestsetXiake";
     
     const std::string varname = "n";
     const std::string datatype = "INT32";
+    const std::string INT32 = "INT32";
+    const std::string DOUBLE = "DOUBLE";
     const int value = 28;
-    
+
     //const std::string varname = "x";
     //const std::string datatype = "DOUBLE";
     //const double value = 3.14;
@@ -290,13 +314,16 @@ int main()
     //const std::string datatype = "STRING100";
     //const std::string value = "hello world";
     
+    //std::string reply_initSet = initSet("initSet");
+    //std::string reply_delSet = delSet("initSet");
+    //std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
+    //std::string reply_resetVal = resetVal("initSet", varname);
+    //std::string reply_delVar = delVar("initSet", varname);
+    
     //std::string reply_getVal = getVal(setname, varname, datatype);
     //parseItem(reply_getVal);
 
-    //std::string reply_saveVal = saveVal(setname, varname, value, datatype);
-    //parseItem(reply_saveVal);
-
-    
+    /**
     std::list<std::string> varnames;
     varnames.push_back("n");
     varnames.push_back("x");
@@ -304,14 +331,23 @@ int main()
     
     std::string reply_getVals = getVals(setname, varnames);
     parseItem(reply_getVals);
-    
+    **/
 
-    //std::string reply_initSet = initSet("initSet");
-    //std::string reply_delSet = delSet("initSet");
-    //std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
-    //std::string reply_resetVal = resetVal("initSet", varname);
-    //std::string reply_delVar = delVar("initSet", varname);
-    
+    //std::string reply_saveVal = saveVal(setname, varname, value, datatype);
+    //parseItem(reply_saveVal);
+
+    std::list<std::map<std::string,std::string> >vars;
+    vars.push_back(valItem("n", "INT32",  32, 1, 1));
+    vars.push_back(valItem("x", "DOUBLE", 3.14, 1, 1));
+    for (auto itr = vars.begin(), end = vars.end(); itr != end; ++itr) {
+        auto valItem = *itr;        
+        std::cout<<valItem["varname"] << std::endl;
+        std::cout<<valItem["datatype"] << std::endl;
+        std::cout<<valItem["value"] << std::endl;
+        std::cout<<valItem["row"] << std::endl;
+        std::cout<<valItem["col"] << std::endl;
+    }
+
     return 0;
 }
 
