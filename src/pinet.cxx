@@ -9,6 +9,8 @@
 #include <string>
 #include <cassert>
 #include <map>
+#include <chrono>
+#include <iomanip>
 
 //using namespace std;
 using namespace boost::network;
@@ -86,8 +88,28 @@ std::map<std::string,std::string> valItem(std::string varname, std::string datat
     return Item;
 }
 
+
+// helper function aim to get current datetime
+std::map<std::string,std::string> getDateTime(){
+    time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&now), "%F %T");
+    std::string tmpString = ss.str();
+    std::vector<std::string> vec;
+    boost::algorithm::split(vec,tmpString, boost::is_any_of(" "),boost::token_compress_on); 
+    std::string date = vec[0];
+    std::string time = vec[1];
+    std::string datetime = date + "T" + time; 
+    std::map<std::string,std::string> datetimeMap;
+    datetimeMap.insert(std::make_pair("date", date));
+    datetimeMap.insert(std::make_pair("time", time));
+    datetimeMap.insert(std::make_pair("datetime", datetime));
+    
+    return datetimeMap; 
+}
+
 // helper function aim to parse reply from response from server
-void parseItem(std::string reply){
+void parseReply(std::string reply){
     // Parse Json into document using rapidjson
     std::string strJson;
     if (reply.find(TRIGGER_RESPONSE_MYSQL)!=std::string::npos){
@@ -130,7 +152,6 @@ void parseItem(std::string reply){
         strJson.erase(0,1);
         strJson.erase(strJson.size()-1);
         std::cout << strJson << std::endl;
-
         Document doc;
         if(!doc.Parse<0>(strJson.c_str()).HasParseError()){
             std::stringstream failure;
@@ -138,6 +159,7 @@ void parseItem(std::string reply){
             std::cout << failure.str() << std::endl;
         }
     }
+
     else if (reply.find(TRIGGER_ERRORS_PHP)!=std::string::npos){
         int count;
         count = reply.length()-reply.find(TRIGGER_ERRORS_PHP)-TRIGGER_ERRORS_PHP.length();
@@ -329,14 +351,17 @@ std::string delVar(std::string setname, std::string varname){
     return sendRequest("p_delVar", parameter);
 }
 
-
 int main()
 {   
     const std::string setname = "TestsetXiake";
     
-    const std::string varname = "n";
-    const std::string datatype = "INT32";
-    const int value = 28;
+    //const std::string varname = "bool";
+    //const std::string datatype = "BOOL";
+    //const bool value = true;
+
+    //const std::string varname = "n";
+    //const std::string datatype = "INT32";
+    //const int value = 28;
 
     //const std::string varname = "x";
     //const std::string datatype = "DOUBLE";
@@ -346,42 +371,73 @@ int main()
     //const std::string datatype = "STRING100";
     //const std::string value = "hello world";
     
+    auto datetimeMap = getDateTime();
+    
+    //const std::string varname = "time";
+    //const std::string datatype = "TIME";
+    //const std::string value = datetimeMap["time"];
+
+    //const std::string varname = "date";
+    //const std::string datatype = "date";
+    //const std::string value = datetimeMap["date"];
+
+    const std::string varname = "datetime";
+    const std::string datatype = "DATETIME";
+    const std::string value = datetimeMap["datetime"];    
+
+    /**
+    unsigned int index = datetime.length() - datetime.find(space) - space.length();
+    std::cout << datetime.length() << std::endl;
+    std::cout << index << std::endl;
+    std::string time = tail(datetime, index);
+    std::cout << time << std::endl;
+    **/
+
+    /**
     std::string reply_initSet = initSet("initSet");
-    parseItem(reply_initSet);
+    parseReply(reply_initSet);
     
     std::string reply_initVar = initVar("initSet", 1, 1, datatype, varname, "");
-    parseItem(reply_initVar);
+    parseReply(reply_initVar);
     
     std::string reply_resetVal = resetVal("initSet", varname);
-    parseItem(reply_resetVal);
+    parseReply(reply_resetVal);
     
     std::string reply_delVar = delVar("initSet", varname);
-    parseItem(reply_delVar);
+    parseReply(reply_delVar);
     
     std::string reply_delSet = delSet("initSet");
-    parseItem(reply_delSet);
+    parseReply(reply_delSet);
+    **/
 
+    
     std::string reply_getVal = getVal(setname, varname, datatype);
-    parseItem(reply_getVal);
-
+    parseReply(reply_getVal);
+        
     std::list<std::string> varnames;
+    varnames.push_back("bool");
     varnames.push_back("n");
     varnames.push_back("x");
-    varnames.push_back("str100");    
+    varnames.push_back("str100");
+    varnames.push_back("time");    
+    varnames.push_back("date");
+    varnames.push_back("datetime");
     std::string reply_getVals = getVals(setname, varnames);
-    parseItem(reply_getVals);
-    
-
+    parseReply(reply_getVals);
+        
     std::string reply_saveVal = saveVal(setname, varname, value, datatype, 0, 0);
-    parseItem(reply_saveVal);
+    parseReply(reply_saveVal);
 
-    
     std::list<std::map<std::string,std::string> > varList;
-    varList.push_back(valItem("n", "INT32",  32, 0, 0));
+    varList.push_back(valItem("bool", "BOOL", 1, 0, 0));
+    varList.push_back(valItem("n", "INT32", 32, 0, 0));
     varList.push_back(valItem("x", "DOUBLE", 3.14, 0, 0));
     varList.push_back(valItem("str100", "STRING100", "hello world", 0, 0));
+    varList.push_back(valItem("time", "TIME", datetimeMap["time"], 0, 0));
+    varList.push_back(valItem("date", "DATE", datetimeMap["date"], 0, 0));
+    varList.push_back(valItem("datetime", "DATETIME", datetimeMap["datetime"], 0, 0));
     std::string reply_saveVals = saveVals(setname, varList);
-    parseItem(reply_saveVals);
+    parseReply(reply_saveVals);
 
     return 0;
 }
