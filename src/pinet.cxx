@@ -417,14 +417,6 @@ int main()
     **/
 
     /**
-    unsigned int index = datetime.length() - datetime.find(space) - space.length();
-    std::cout << datetime.length() << std::endl;
-    std::cout << index << std::endl;
-    std::string time = tail(datetime, index);
-    std::cout << time << std::endl;
-    **/
-
-    /**
     std::string reply_initSet = initSet("initSet");
     parseReply(reply_initSet);
     
