@@ -16,7 +16,7 @@ configure_file (
 # so that we will find PiNetConfig.h
 include_directories ("${PROJECT_BINARY_DIR}")
 
-#set ( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ~/cpp-netlib-build )
+#set ( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ~/cpp-netlib-build-raspberrypi )
 find_package ( cppnetlib 0.11.0 REQUIRED )
 include_directories ( ${CPPNETLIB_INCLUDE_DIRS} )
 

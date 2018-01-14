@@ -90,13 +90,18 @@ std::map<std::string,std::string> valItem(std::string varname, std::string datat
 
 
 // helper function aim to get current datetime
+
 std::map<std::string,std::string> getDateTime(){
-    time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&now), "%F %T");
-    std::string tmpString = ss.str();
+    std::array<char, 64> buffer;
+    buffer.fill(0);
+    time_t rawtime;
+    time(&rawtime);
+    const auto timeinfo = std::localtime(&rawtime);
+    std::strftime(buffer.data(), sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    std::string timeStr(buffer.data());
+    
     std::vector<std::string> vec;
-    boost::algorithm::split(vec,tmpString, boost::is_any_of(" "),boost::token_compress_on); 
+    boost::algorithm::split(vec,timeStr, boost::is_any_of(" "),boost::token_compress_on); 
     std::string date = vec[0];
     std::string time = vec[1];
     std::string datetime = date + "T" + time; 
@@ -107,6 +112,7 @@ std::map<std::string,std::string> getDateTime(){
     
     return datetimeMap; 
 }
+
 
 // helper function aim to read file into std::string 
 std::string readfile( std::string filename){
@@ -384,9 +390,9 @@ int main()
     //const std::string datatype = "STRING100";
     //const std::string value = "hello world";
     
-    //const std::string varname = "str100";
-    //const std::string datatype = "STRING100";
-    //const std::string value = "hello world";
+    const std::string varname = "str100";
+    const std::string datatype = "STRING100";
+    const std::string value = "hello world";
     
     //const std::string varname = "strK";
     //const std::string datatype = "STRINGK";
@@ -396,10 +402,9 @@ int main()
     //const std::string datatype = "STRINGM";
     const std::string value_strM = "One Hundred Years of Solitude begins as a flashback, with Colonel Aureliano Buendía recollecting the years immediately following the founding of Macondo, when a band of gypsies frequently bring technological marvels to the dreamy, isolated village. José Arcadio Buendía, the insatiably curious founder of the town, is obsessed with these magical implements. Using supplies given to him by Melquíades, the leader of the gypsies, he immerses himself in scientific study, to the frustration of his more practical wife, Úrsula Iguarán. Eventually, with Melquíades’s prodding, José Arcadio Buendía begins to explore alchemy, the pseudo-science of making gold out of other metals. He is driven by a desire for progress and by an intense search for knowledge that forces him into solitude. Increasingly, he withdraws from human contact, becoming unkempt, antisocial, and interested only in his pursuit of knowledge. But José Arcadio Buendía is not always a solitary scientist. On the contrary, he is the leader who oversaw the building of the village of Macondo, an idyllic place dedicated to hard work and order, filled with young people, and as yet, unvisited by death.";    
 
-    const std::string varname = "str100M";
-    const std::string datatype = "STRING100M";
-    const std::string value_str100M = readfile("/home/sammysun/PiNet/src/SIDDHARTHA.txt");
-    
+    //const std::string varname = "str100M";
+    //const std::string datatype = "STRING100M";
+    //const std::string value_str100M = readfile("/home/sammysun/PiNet/src/SIDDHARTHA.txt");
     
     auto datetimeMap = getDateTime();
     /** 
@@ -416,7 +421,7 @@ int main()
     //const std::string value = datetimeMap["datetime"];    
     **/
 
-    /**
+    
     std::string reply_initSet = initSet("initSet");
     parseReply(reply_initSet);
     
@@ -431,13 +436,11 @@ int main()
     
     std::string reply_delSet = delSet("initSet");
     parseReply(reply_delSet);
-    **/
-
-    /**
+    
     std::string reply_getVal = getVal(setname, varname, datatype);
     parseReply(reply_getVal);
-    **/    
-    /**
+       
+    
     std::list<std::string> varnames;
     varnames.push_back("bool");
     varnames.push_back("n");
@@ -453,9 +456,9 @@ int main()
     parseReply(reply_getVals);
     
         
-    std::string reply_saveVal = saveVal(setname, varname, value_str100M, datatype, 0, 0);
+    std::string reply_saveVal = saveVal(setname, varname, value, datatype, 0, 0);
     parseReply(reply_saveVal);
-    **/
+    
     
     std::list<std::map<std::string,std::string> > varList;
     varList.push_back(valItem("bool", "BOOL", 1, 0, 0));
@@ -464,7 +467,7 @@ int main()
     varList.push_back(valItem("str100", "STRING100", "hello world", 0, 0));
     varList.push_back(valItem("strk", "STRINGK", value_strk, 0, 0));
     varList.push_back(valItem("strM", "STRINGM", value_strM, 0, 0));
-    varList.push_back(valItem("str100M", "STRING100M", value_str100M, 0, 0));
+    //varList.push_back(valItem("str100M", "STRING100M", value_str100M, 0, 0));
     varList.push_back(valItem("time", "TIME", datetimeMap["time"], 0, 0));
     varList.push_back(valItem("date", "DATE", datetimeMap["date"], 0, 0));
     varList.push_back(valItem("datetime", "DATETIME", datetimeMap["datetime"], 0, 0));
