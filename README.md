@@ -1,34 +1,40 @@
 # PiNet
 network interface for rasberry pi based on cpp-netlib
 
-# make
-cd ~/PiNet/build <br />
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DOPENSSL_ROOT_DIR=/opt/openssl  -DBOOST_ROOT=/usr/local/boost_1_66_0 ../src/  <br />
-make <br />
-make install <br /> 
+## build on ubuntu 16.04 using gcc
+	cd ~/PiNet/build <br />
+	cmake ../src/  <br />
+	make <br />
 
-# run 
-./PiNet
+## build on ubuntu 16.04 using cross compile toolchain for raspberrypi 1
+	cd ~/PiNet
+	mkdir raspberrypi_build
+	cd raspberrypi_build
+	cmake -DCMAKE_TOOLCHAIN_FILE=$HOME/raspberrypi/pi.cmake  ../src 
+	make
 
-# support datatype
-BOOL <br /> 
-INT32 <br /> 
-DOUBLE <br /> 
-STR100 <br /> 
-STRK <br /> 
-STRM <br /> 
-STR100M <br /> 
-TIME <br /> 
-DATE <br /> 
-DATETIME <br /> 
+## run 
+	./PiNet
 
-# support function
-initSet(std::string setname) <br /> 
-delSet(std::string setname) <br />
-initVar(std::string setname, int row, int col, std::string datatype, std::string varname, std::string unit) <br />
-resetVal(std::string setname, std::string varname) <br />
-delVar(std::string setname, std::string varname) <br />
-getVal(std::string setname, std::string varname, std::string datatype) <br />
-getVals(std::string setname, std::list<std::string> varnames) <br/>
-saveVal(std::string setname, std::string varname, T value, std::string datatype, int row, int col) <br />
-saveVals(std::string setname, std::list<std::map<std::string,std::string> > varList) <br />
+## support datatype
+	BOOL 
+	INT32 
+	DOUBLE 
+	STR100
+	STRK 
+	STRM 
+	STR100M 
+	TIME 
+	DATE 
+	DATETIME 
+
+## support function
+	initSet(std::string setname)
+	delSet(std::string setname)
+	initVar(std::string setname, int row, int col, std::string datatype, std::string varname, std::string unit)
+	resetVal(std::string setname, std::string varname)
+	delVar(std::string setname, std::string varname)
+	getVal(std::string setname, std::string varname, std::string datatype)
+	getVals(std::string setname, std::list<std::string> varnames)
+	saveVal(std::string setname, std::string varname, T value, std::string datatype, int row, int col)
+	saveVals(std::string setname, std::list<std::map<std::string,std::string> > varList) 
