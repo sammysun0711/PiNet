@@ -2,9 +2,9 @@
 network interface for rasberry pi based on cpp-netlib
 
 ## build on ubuntu 16.04 using gcc
-	cd ~/PiNet/build <br />
-	cmake ../src/  <br />
-	make <br />
+	cd ~/PiNet/build
+	cmake ../src/ 
+	make
 
 ## build on ubuntu 16.04 using cross compile toolchain for raspberrypi 1
 	cd ~/PiNet
