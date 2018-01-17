@@ -421,7 +421,6 @@ int main()
     //const std::string value = datetimeMap["datetime"];    
     **/
 
-    
     std::string reply_initSet = initSet("initSet");
     parseReply(reply_initSet);
     

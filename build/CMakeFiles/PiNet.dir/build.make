@@ -60,15 +60,15 @@ include CMakeFiles/PiNet.dir/flags.make
 CMakeFiles/PiNet.dir/pinet.cxx.o: CMakeFiles/PiNet.dir/flags.make
 CMakeFiles/PiNet.dir/pinet.cxx.o: /home/sammysun/PiNet/src/pinet.cxx
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sammysun/PiNet/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/PiNet.dir/pinet.cxx.o"
-	/usr/bin/g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PiNet.dir/pinet.cxx.o -c /home/sammysun/PiNet/src/pinet.cxx
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PiNet.dir/pinet.cxx.o -c /home/sammysun/PiNet/src/pinet.cxx
 
 CMakeFiles/PiNet.dir/pinet.cxx.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PiNet.dir/pinet.cxx.i"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sammysun/PiNet/src/pinet.cxx > CMakeFiles/PiNet.dir/pinet.cxx.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sammysun/PiNet/src/pinet.cxx > CMakeFiles/PiNet.dir/pinet.cxx.i
 
 CMakeFiles/PiNet.dir/pinet.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PiNet.dir/pinet.cxx.s"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sammysun/PiNet/src/pinet.cxx -o CMakeFiles/PiNet.dir/pinet.cxx.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sammysun/PiNet/src/pinet.cxx -o CMakeFiles/PiNet.dir/pinet.cxx.s
 
 CMakeFiles/PiNet.dir/pinet.cxx.o.requires:
 

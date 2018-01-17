@@ -1,1 +1,1 @@
-/usr/bin/g++    -Wall -std=gnu++0x -pthread -g   CMakeFiles/PiNet.dir/pinet.cxx.o  -o PiNet -rdynamic /usr/local/lib/libcppnetlib-client-connections.a /usr/local/lib/libcppnetlib-server-parsers.a /usr/local/lib/libcppnetlib-uri.a -lssl -lcrypto 
+/usr/bin/c++    -Wall -std=gnu++0x -pthread   CMakeFiles/PiNet.dir/pinet.cxx.o  -o PiNet -rdynamic /usr/local/lib/libcppnetlib-client-connections.a /usr/local/lib/libcppnetlib-server-parsers.a /usr/local/lib/libcppnetlib-uri.a -lssl -lcrypto 
