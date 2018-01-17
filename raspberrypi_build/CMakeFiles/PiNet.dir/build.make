@@ -60,15 +60,15 @@ include CMakeFiles/PiNet.dir/flags.make
 CMakeFiles/PiNet.dir/pinet.cxx.o: CMakeFiles/PiNet.dir/flags.make
 CMakeFiles/PiNet.dir/pinet.cxx.o: /home/sammysun/PiNet/src/pinet.cxx
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sammysun/PiNet/raspberrypi_build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/PiNet.dir/pinet.cxx.o"
-	/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PiNet.dir/pinet.cxx.o -c /home/sammysun/PiNet/src/pinet.cxx
+	/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  --sysroot=/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PiNet.dir/pinet.cxx.o -c /home/sammysun/PiNet/src/pinet.cxx
 
 CMakeFiles/PiNet.dir/pinet.cxx.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PiNet.dir/pinet.cxx.i"
-	/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sammysun/PiNet/src/pinet.cxx > CMakeFiles/PiNet.dir/pinet.cxx.i
+	/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  --sysroot=/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sammysun/PiNet/src/pinet.cxx > CMakeFiles/PiNet.dir/pinet.cxx.i
 
 CMakeFiles/PiNet.dir/pinet.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PiNet.dir/pinet.cxx.s"
-	/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sammysun/PiNet/src/pinet.cxx -o CMakeFiles/PiNet.dir/pinet.cxx.s
+	/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++  --sysroot=/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sammysun/PiNet/src/pinet.cxx -o CMakeFiles/PiNet.dir/pinet.cxx.s
 
 CMakeFiles/PiNet.dir/pinet.cxx.o.requires:
 
@@ -90,11 +90,11 @@ PiNet_EXTERNAL_OBJECTS =
 
 PiNet: CMakeFiles/PiNet.dir/pinet.cxx.o
 PiNet: CMakeFiles/PiNet.dir/build.make
-PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/lib/libcppnetlib-client-connections.a
-PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/lib/libcppnetlib-server-parsers.a
-PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/lib/libcppnetlib-uri.a
-PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/lib/libssl.a
-PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/lib/libcrypto.a
+PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/lib/libcppnetlib-client-connections.a
+PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/lib/libcppnetlib-server-parsers.a
+PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/lib/libcppnetlib-uri.a
+PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/lib/libssl.a
+PiNet: /home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/lib/libcrypto.a
 PiNet: CMakeFiles/PiNet.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sammysun/PiNet/raspberrypi_build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable PiNet"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/PiNet.dir/link.txt --verbose=$(VERBOSE)

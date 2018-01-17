@@ -16,8 +16,8 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/sammysun/PiNet/src/{$HOME/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/opt/vc/include/interface/vcos/pthreads"
   "/home/sammysun/PiNet/src/{$HOME/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/opt/vc/include/interface/vmcs_host/linux"
   "."
-  "/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/lib/cmake/cppnetlib/../../../include"
-  "/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/include"
+  "/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/lib/cmake/cppnetlib/../../../include"
+  "/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/local/include"
   )
 
 # Targets to which this target links.
