@@ -13,8 +13,16 @@ network interface for rasberry pi based on cpp-netlib
 	cmake -DCMAKE_TOOLCHAIN_FILE=$HOME/raspberrypi/pi.cmake  ../src 
 	make
 
-## run 
+## run on ubuntu 16.04 
 	./PiNet
+
+## run on raspberrypi
+### secure copy built PiNet to raspberrypi 
+
+	scp PiNet pi@10.42.0.212:/home/pi/PiNet/build
+
+### test output of PiNet
+	ssh pi@10.42.0.212 ./PiNet/build/PiNet
 
 ## support datatype
 	BOOL 
