@@ -7,6 +7,7 @@
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
+
 #include <string>
 #include <cassert>
 #include <map>
@@ -46,28 +47,6 @@ std::string tail(std::string const& source, size_t const length) {
   return source.substr(source.size() - length);
 }
 
-//helper function for spilt multiply json in string into std::list<std::string>
-std::list<std::string> get_str_between_two_str(const std::string &s,
-        const std::string &start_delim,
-        const std::string &stop_delim)
-{
-    std::string tmpString = s;
-    std::list<std::string> list;
-    unsigned first_delim_pos;
-    unsigned end_pos_of_first_delim;
-    unsigned last_delim_pos;
-    while(tmpString.find(start_delim)!= std::string::npos){
-        first_delim_pos = tmpString.find(start_delim);
-        end_pos_of_first_delim = first_delim_pos + start_delim.length();
-        last_delim_pos = tmpString.find_first_of(stop_delim, end_pos_of_first_delim);
-        
-        list.push_back("{" + tmpString.substr(end_pos_of_first_delim,
-                                last_delim_pos - end_pos_of_first_delim) + "}");
-        tmpString = tail(s, tmpString.length() - last_delim_pos -1);
-    }
-    return list; 
-}
-
 // helper function to make std::map object to make key-value mapping
 template<typename T>
 std::map<std::string,std::string> valItem(std::string varname, std::string datatype, T value, int row, int col){
@@ -88,9 +67,7 @@ std::map<std::string,std::string> valItem(std::string varname, std::string datat
     return Item;
 }
 
-
 // helper function aim to get current datetime
-
 std::map<std::string,std::string> getDateTime(){
     std::array<char, 64> buffer;
     buffer.fill(0);
@@ -136,16 +113,15 @@ void parseReply(std::string reply){
         int count;
         count = reply.length()-reply.find(TRIGGER_RESPONSE_MYSQL)-TRIGGER_RESPONSE_MYSQL.length();
         strJson = tail(reply, count);
-        // if there are multiple json in [], save every content between {} in std::list<std::string>,
-        // and parse single parse json into doc, when there is no json in list, return no json in reply from server
+
+        Document doc;
         if (strJson.length()>2){
-            std::list<std::string> jsonList = get_str_between_two_str(strJson, "{","}"); 
-            for (std::list<std::string>::const_iterator itr = jsonList.begin(), end = jsonList.end(); itr != end; ++itr) {
-                std::string json = *itr;
-                Document doc;
-                if(!doc.Parse<rapidjson::kParseStopWhenDoneFlag>(json.c_str()).HasParseError()){
+            if(!doc.Parse<rapidjson::kParseStopWhenDoneFlag>(strJson.c_str()).HasParseError()){
+                // if there are multiple json in [], after parse, doc is a JSON array, loop every element in array
+                for (auto& json : doc.GetArray()) {
                     std::cout << std::endl << "parse result: " << std::endl;
-                    for (Value::ConstMemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr){
+                    // loop json to show all key-value 
+                    for (Value::ConstMemberIterator itr = json.MemberBegin(); itr != json.MemberEnd(); ++itr){
                         std::cout << itr->name.GetString() << ": "; //key name
                         if (itr->value.IsInt())          // if integer
                             std::cout << itr->value.GetInt() << std::endl;
@@ -155,12 +131,11 @@ void parseReply(std::string reply){
                             std::cout << itr->value.GetString() << std::endl;
                     }
                 }
-                else{
-                    std::cerr << std::endl <<  "parse result : there is no valid content in reply" << std::endl;
-                }      
             }
-        }
-            
+            else{
+                    std::cerr << std::endl <<  "parse result : there is no valid content in reply" << std::endl;
+                }
+        }   
         else if(strJson == "[]"){
             std::cerr << std::endl <<"parse result : prozedur success, there is no Json in reply from server" << std::endl;   
         }
@@ -378,9 +353,9 @@ int main()
     //const std::string datatype = "BOOL";
     //const bool value = true;
 
-    //const std::string varname = "n";
-    //const std::string datatype = "INT32";
-    //const int value = 28;
+    const std::string varname = "n";
+    const std::string datatype = "INT32";
+    const int value = 28;
 
     //const std::string varname = "x";
     //const std::string datatype = "DOUBLE";
@@ -390,9 +365,9 @@ int main()
     //const std::string datatype = "STRING100";
     //const std::string value = "hello world";
     
-    const std::string varname = "str100";
-    const std::string datatype = "STRING100";
-    const std::string value = "hello world";
+    //const std::string varname = "str100";
+    //const std::string datatype = "STRING100";
+    //const std::string value = "hello world";
     
     //const std::string varname = "strK";
     //const std::string datatype = "STRINGK";
@@ -404,7 +379,7 @@ int main()
 
     //const std::string varname = "str100M";
     //const std::string datatype = "STRING100M";
-    //const std::string value_str100M = readfile("/home/sammysun/PiNet/src/SIDDHARTHA.txt");
+    const std::string value_str100M = readfile("/home/sammysun/PiNet/src/SIDDHARTHA.txt");
     
     auto datetimeMap = getDateTime();
     /** 
@@ -421,6 +396,7 @@ int main()
     //const std::string value = datetimeMap["datetime"];    
     **/
 
+    /*
     std::string reply_initSet = initSet("initSet");
     parseReply(reply_initSet);
     
@@ -436,10 +412,12 @@ int main()
     std::string reply_delSet = delSet("initSet");
     parseReply(reply_delSet);
     
+    */
     std::string reply_getVal = getVal(setname, varname, datatype);
     parseReply(reply_getVal);
        
     
+    /*
     std::list<std::string> varnames;
     varnames.push_back("bool");
     varnames.push_back("n");
@@ -447,7 +425,7 @@ int main()
     varnames.push_back("str100");
     varnames.push_back("strk");
     varnames.push_back("strM");
-    varnames.push_back("str100M");
+    //varnames.push_back("str100M");
     varnames.push_back("time");    
     varnames.push_back("date");
     varnames.push_back("datetime");
@@ -473,7 +451,7 @@ int main()
     
     std::string reply_saveVals = saveVals(setname, varList);
     parseReply(reply_saveVals);
-    
+    */
     return 0;
 }
 
