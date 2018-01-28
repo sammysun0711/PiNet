@@ -222,6 +222,7 @@ std::string getVal (std::string setname, std::string varname, std::string dataty
     return sendRequest("p_getVal", parameter);    
 } 
 
+// core function for getting mutiple value of variable from databank
 std::string getVals (std::string setname, std::list<std::string> varnames){
     
     std::string vars;
