@@ -1,0 +1,5 @@
+// the configured options and settings for PiNet
+#define PiNet_VERSION_MAJOR @PiNet_VERSION_MAJOR@
+#define PiNet_VERSION_MINOR @PiNet_VERSION_MINOR@
+
+

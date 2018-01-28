@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpinet.cpp.a  CMakeFiles/pinet.cpp.dir/main.cpp.o
+/usr/bin/ranlib libpinet.cpp.a
