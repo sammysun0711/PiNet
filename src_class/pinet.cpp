@@ -12,7 +12,7 @@ const std::string TRIGGER_ERRORS_MYSQL = "??**wejnonwr4234gTRIGGER_ERRORS_MYSQL*
 const std::string TRENNER = "?/?TRENN?/?";
 
 //helper function for truncrate [] part from httpResponse        
-std::string PiNet::tail(std::string const& source, size_t const length) {
+std::string PiNet::tail(const std::string& source, const size_t& length) {
   if (length >= source.size()) { return source; }
   return source.substr(source.size() - length);
 }
@@ -41,7 +41,7 @@ std::map<std::string,std::string> PiNet::getDateTime(){
 }
 
 // helper function aim to read file into std::string 
-std::string PiNet::readfile( std::string filename){
+std::string PiNet::readfile(const std::string& filename){
     std::ifstream file( filename, std::ifstream::binary);
     std::streambuf* raw_buffer = file.rdbuf();
     size_t size = raw_buffer->pubseekoff(0, file.end, file.in);
@@ -56,7 +56,7 @@ std::string PiNet::readfile( std::string filename){
 }
 
 // core function aim to parse reply from response from server
-void PiNet::parseReply(std::string reply){
+void PiNet::parseReply(const std::string& reply){
     // Parse Json into document using rapidjson
     std::string strJson;
     if (reply.find(TRIGGER_RESPONSE_MYSQL)!=std::string::npos){
@@ -96,7 +96,6 @@ void PiNet::parseReply(std::string reply){
         strJson = tail(reply, count);
         strJson.erase(0,1);
         strJson.erase(strJson.size()-1);
-        std::cout << strJson << std::endl;
         Document doc;
         if(!doc.Parse<0>(strJson.c_str()).HasParseError()){
             std::stringstream failure;
@@ -114,7 +113,7 @@ void PiNet::parseReply(std::string reply){
 }
 
 // core function for sendRequest to server
-std::string PiNet::sendRequest(std::string prozedur, std::list<std::string> parameter){
+std::string PiNet::sendRequest(const std::string& prozedur, const std::list<std::string>& parameter){
     
     std::stringstream query;
     int count = 1;
@@ -122,8 +121,8 @@ std::string PiNet::sendRequest(std::string prozedur, std::list<std::string> para
           << "&passwort=" << uri::encoded(pwd)
           << "&prozedur=" << uri::encoded(prozedur);
 
-    for (std::list<std::string>::const_iterator iterator = parameter.begin(), end = parameter.end(); iterator != end; ++iterator) {
-        std::string value = *iterator;
+    for (auto itr = parameter.begin(); itr != parameter.end(); ++itr) {
+        std::string value = *itr;
         std::string vtyp = "string";
         bool isNumber_ = false;
 
@@ -157,7 +156,7 @@ std::string PiNet::sendRequest(std::string prozedur, std::list<std::string> para
 }
 
 // core function aim to init setname
-std::string PiNet::initSet( std::string setname){
+std::string PiNet::initSet(const std::string& setname){
     std::list<std::string> parameter;
     parameter.push_back(usr);
     parameter.push_back(pwd);
@@ -165,7 +164,7 @@ std::string PiNet::initSet( std::string setname){
     return sendRequest("p_initSet", parameter);
 }
 // core function aim to delete setname
-std::string PiNet::delSet( std::string setname){
+std::string PiNet::delSet( const std::string& setname){
     std::list<std::string> parameter;
     parameter.push_back(usr);
     parameter.push_back(pwd);
@@ -174,7 +173,7 @@ std::string PiNet::delSet( std::string setname){
     return sendRequest("p_delSet", parameter);
 }
 // core function aim to init variable
-std::string PiNet::initVar( std::string setname, int row, int col, std::string datatype, std::string varname, std::string unit){
+std::string PiNet::initVar( const std::string& setname, int row, int col, const std::string& datatype, const std::string& varname, const std::string& unit){
     std::list<std::string> parameter;
     parameter.push_back(usr);
     parameter.push_back(pwd);
@@ -188,7 +187,7 @@ std::string PiNet::initVar( std::string setname, int row, int col, std::string d
     return sendRequest("p_initVar", parameter);
 }
 // core function aim to reset value of variable
-std::string PiNet::resetVal(std::string setname, std::string varname){
+std::string PiNet::resetVal(const std::string& setname, const std::string& varname){
     std::list<std::string> parameter;
     parameter.push_back(usr);
     parameter.push_back(pwd);
@@ -198,7 +197,7 @@ std::string PiNet::resetVal(std::string setname, std::string varname){
     return sendRequest("p_resetVal", parameter);
 }
 // core function aim to delete variable
-std::string PiNet::delVar(std::string setname, std::string varname){
+std::string PiNet::delVar(const std::string& setname, const std::string& varname){
     std::list<std::string> parameter;
     parameter.push_back(usr);
     parameter.push_back(pwd);
@@ -209,7 +208,7 @@ std::string PiNet::delVar(std::string setname, std::string varname){
 }
 
 // core function for getting value of variable from databank
-std::string PiNet::getVal (std::string setname, std::string varname, std::string datatype){
+std::string PiNet::getVal (const std::string& setname, const std::string& varname, const std::string& datatype){
     
     std::list<std::string> parameter;
     parameter.push_back(usr);
@@ -221,11 +220,11 @@ std::string PiNet::getVal (std::string setname, std::string varname, std::string
     return sendRequest("p_getVal", parameter);    
 } 
 // core function for getting mutiple value of variable from databank
-std::string PiNet::getVals (std::string setname, std::list<std::string> varnames){
+std::string PiNet::getVals (const std::string& setname, const std::list<std::string>& varnames){
     
     std::string vars;
-    for (std::list<std::string>::const_iterator iterator = varnames.begin(), end = varnames.end(); iterator != end; ++iterator) {
-        vars = vars + *iterator + TRENNER;
+    for (auto itr = varnames.begin(); itr != varnames.end(); ++itr) {
+        vars = vars + *itr + TRENNER;
     }
     std::list<std::string> parameter;
     parameter.push_back(usr);
@@ -236,7 +235,7 @@ std::string PiNet::getVals (std::string setname, std::list<std::string> varnames
     return sendRequest("p_getVals", parameter);    
 }
 // core function aim to save value of variable in databank, total 4 override function
-std::string PiNet::saveVal (std::string setname, std::string varname, bool value, std::string datatype, int row = 0 , int col = 0){
+std::string PiNet::saveVal (const std::string& setname, const std::string& varname, const bool& value, const std::string& datatype, int row = 0 , int col = 0){
     
     std::list<std::string> parameter;
     
@@ -259,7 +258,7 @@ std::string PiNet::saveVal (std::string setname, std::string varname, bool value
     return sendRequest("p_saveValItem", parameter);    
 }
 
-std::string PiNet::saveVal (std::string setname, std::string varname, int value, std::string datatype, int row = 0 , int col = 0){
+std::string PiNet::saveVal (const std::string& setname, const std::string& varname, const int& value, const std::string& datatype, int row = 0 , int col = 0){
     
     std::list<std::string> parameter;
     
@@ -282,7 +281,7 @@ std::string PiNet::saveVal (std::string setname, std::string varname, int value,
     return sendRequest("p_saveValItem", parameter);    
 }
 
-std::string PiNet::saveVal (std::string setname, std::string varname, double value, std::string datatype, int row = 0 , int col = 0){
+std::string PiNet::saveVal (const std::string& setname, const std::string& varname, const double& value, const std::string& datatype, int row = 0 , int col = 0){
     
     std::list<std::string> parameter;
     
@@ -305,7 +304,7 @@ std::string PiNet::saveVal (std::string setname, std::string varname, double val
     return sendRequest("p_saveValItem", parameter);    
 }
 
-std::string PiNet::saveVal (std::string setname, std::string varname, std::string value, std::string datatype, int row = 0 , int col = 0){
+std::string PiNet::saveVal (const std::string& setname, const std::string& varname, const std::string& value, const std::string& datatype, int row = 0 , int col = 0){
     
     std::list<std::string> parameter;
     
@@ -328,7 +327,7 @@ std::string PiNet::saveVal (std::string setname, std::string varname, std::strin
     return sendRequest("p_saveValItem", parameter);    
 }
 // core function aim to save multiply variable in databank
-std::string PiNet::saveVals (std::string setname, std::list<std::map<std::string,std::string> > varList){
+std::string PiNet::saveVals (const std::string& setname, const std::list<std::map<std::string,std::string> >& varList){
     
     std::string vars = "";
     std::string values = "";
@@ -336,7 +335,7 @@ std::string PiNet::saveVals (std::string setname, std::list<std::map<std::string
     std::string rows = "";
     std::string cols = "";
     
-    for (auto itr = varList.begin(), end = varList.end(); itr != end; ++itr) {
+    for (auto itr = varList.begin(); itr != varList.end(); ++itr) {
         auto valItem = *itr;        
         vars = vars + valItem["varname"] + TRENNER;
         values = values + valItem["value"] + TRENNER;

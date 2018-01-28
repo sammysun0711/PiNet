@@ -10,7 +10,6 @@
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include <string>
 #include <map>
 #include <chrono>
 #include <iomanip>
@@ -19,37 +18,37 @@
 class PiNet
 {
 public:
-    PiNet(std::string username, std::string passwort){
+    PiNet(const std::string& username, const std::string& passwort){
         usr = username;
         pwd = passwort;        
     };
     ~PiNet(){};
 
     template <typename T1>
-    bool isNumber(T1 x);
-    std::string tail(std::string const& source, size_t const length);
+    bool isNumber(const T1& x);
+    std::string tail(const std::string& source, const size_t& length);
     template <typename T2>
-    std::map<std::string,std::string> valItem(std::string varname, std::string datatype, T2 value, int row, int col);
+    std::map<std::string,std::string> valItem(const std::string& varname, const std::string& datatype, T2 value, int row, int col);
     std::map<std::string,std::string> getDateTime();
-    std::string readfile( std::string filename);
-    void parseReply(std::string reply);
-    std::string sendRequest(std::string prozedur, std::list<std::string> parameter);
+    std::string readfile(const std::string& filename);
+    
+    void parseReply(const std::string& reply);
+    std::string sendRequest(const std::string& prozedur, const std::list<std::string>& parameter);
 
-    std::string initSet( std::string setname);
-    std::string delSet( std::string setname);
-    std::string initVar( std::string setname, int row, int col, std::string datatype, std::string varname, std::string unit);
-    std::string resetVal(std::string setname, std::string varname);
-    std::string delVar(std::string setname, std::string varname);
+    std::string initSet(const std::string& setname);
+    std::string delSet( const std::string& setname);
+    std::string initVar(const std::string& setname, int row, int col, const std::string& datatype, const std::string& varname, const std::string& unit);
+    std::string resetVal(const std::string& setname, const std::string& varname);
+    std::string delVar(const std::string& setname, const std::string& varname);
 
-    std::string getVal (std::string setname, std::string varname, std::string datatype);
-    std::string getVals (std::string setname, std::list<std::string> varnames);
+    std::string getVal (const std::string& setname, const std::string& varname, const std::string& datatype);
+    std::string getVals (const std::string& setname, const std::list<std::string>& varnames);
     // TODO find alternative template way, aim to reduce override function of saveVal
-    std::string saveVal (std::string setname, std::string varname, bool value, std::string datatype, int row , int col);
-    std::string saveVal (std::string setname, std::string varname, int value, std::string datatype, int row , int col);
-    std::string saveVal (std::string setname, std::string varname, double value, std::string datatype, int row , int col );
-    std::string saveVal (std::string setname, std::string varname, std::string value, std::string datatype, int row , int col);
-    std::string saveVals (std::string setname, std::list<std::map<std::string,std::string> > varList);
-
+    std::string saveVal (const std::string& setname, const std::string& varname, const bool& value, const std::string& datatype, int row , int col);
+    std::string saveVal (const std::string& setname, const std::string& varname, const int& value, const std::string& datatype, int row , int col);
+    std::string saveVal (const std::string& setname, const std::string& varname, const double& value, const std::string& datatype, int row , int col );
+    std::string saveVal (const std::string& setname, const std::string& varname, const std::string& value, const std::string& datatype, int row , int col);
+    std::string saveVals (const std::string& setname, const std::list<std::map<std::string,std::string> >& varList);
 
 private:
     std::string usr;
@@ -57,4 +56,5 @@ private:
 };
 
 #include "pinet.hpp"
+
 #endif // PINET_H

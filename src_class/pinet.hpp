@@ -6,7 +6,7 @@
 
 //helper function for check if value is number
 template<typename T1>
-bool PiNet::isNumber(T1 x) {
+bool PiNet::isNumber(const T1& x) {
    std::string s;
    std::stringstream ss; 
    ss << x;
@@ -19,7 +19,7 @@ bool PiNet::isNumber(T1 x) {
 
 // helper function to make std::map object to make key-value mapping
 template<typename T2>
-std::map<std::string,std::string> PiNet::valItem(std::string varname, std::string datatype, T2 value, int row, int col){
+std::map<std::string,std::string> PiNet::valItem(const std::string& varname, const std::string& datatype, T2 value, int row, int col){
     std::map<std::string,std::string> Item;
     Item.insert(std::make_pair("varname", varname));
     std::string value_;
