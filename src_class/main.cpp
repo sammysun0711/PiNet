@@ -70,10 +70,10 @@ int main()
     pinet_.parseReply(reply_delSet);
     
     */
-    /*
+    
     std::string reply_getVal = pinet_.getVal(setname, varname, datatype);
     pinet_.parseReply(reply_getVal);
-    */
+    
     /*   
     std::list<std::string> varnames;
     varnames.push_back("bool");
