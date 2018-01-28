@@ -1,0 +1,2 @@
+/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-ar qc libpinet.cpp.a  CMakeFiles/pinet.cpp.dir/main.cpp.o
+/home/sammysun/raspberrypi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-ranlib libpinet.cpp.a
